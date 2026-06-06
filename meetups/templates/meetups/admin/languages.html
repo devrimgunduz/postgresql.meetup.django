@@ -1,0 +1,65 @@
+{% extends "meetups/admin/base.html" %}
+{% block title %}Languages{% endblock %}
+{% block nav_langs %}active{% endblock %}
+{% block page_title %}Languages{% endblock %}
+
+{% block content %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+<table class="admin-table">
+  <thead>
+    <tr><th>Code</th><th>Label</th><th>Order</th><th>Status</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for l in languages %}
+    <tr>
+      <td><code>{{ l.code }}</code></td>
+      <td>{{ l.label }}</td>
+      <td>{{ l.sort_order }}</td>
+      <td>
+        {% if l.is_default %}<span class="badge badge-published">default</span>
+        {% elif l.is_active %}<span class="badge badge-published">active</span>
+        {% else %}<span class="badge badge-past">inactive</span>{% endif %}
+      </td>
+      <td class="actions">
+        {% if not l.is_default %}
+          <a href="?action=set_default&id={{ l.pk }}" class="btn btn-sm btn-secondary"
+             onclick="return confirm('Set {{ l.label }} as default?')">Set Default</a>
+          <a href="?action=toggle&id={{ l.pk }}" class="btn btn-sm btn-secondary">
+            {% if l.is_active %}Deactivate{% else %}Activate{% endif %}
+          </a>
+          <a href="?action=delete&id={{ l.pk }}" class="btn btn-sm btn-danger"
+             onclick="return confirm('Delete {{ l.label }}? All translations for this language will be lost.')">Delete</a>
+        {% else %}
+          <span class="muted">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="edit-form-wrap">
+  <h2 class="form-section-title">Add Language</h2>
+  <form method="POST" class="edit-form">
+    {% csrf_token %}
+    <div class="form-row form-row-2">
+      <label>Language Code
+        <input type="text" name="code" placeholder="e.g. de, fr, ar, zh-hans" required>
+        <span class="hint">Lowercase. Used in ?lang= URL parameter.</span>
+      </label>
+      <label>Display Label
+        <input type="text" name="label" placeholder="e.g. Deutsch, Français, العربية" required>
+      </label>
+    </div>
+    <div class="form-row">
+      <label style="max-width:200px">Sort Order
+        <input type="number" name="sort_order" value="{{ languages.count|add:1 }}">
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Add Language</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

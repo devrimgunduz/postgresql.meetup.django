@@ -1,0 +1,116 @@
+{% extends "meetups/admin/base.html" %}
+{% block title %}{% if meetup %}Edit Meetup{% else %}New Meetup{% endif %}{% endblock %}
+{% block nav_new %}{% if not meetup %}active{% endif %}{% endblock %}
+{% block page_title %}{% if meetup %}Edit Meetup{% else %}New Meetup{% endif %}{% endblock %}
+{% block topbar_action %}
+  {% if meetup %}
+    <a href="{% url 'talks_list' meetup.pk %}" class="btn btn-secondary">Manage Talks →</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="POST" class="edit-form">
+  {% csrf_token %}
+
+  <div class="form-section">
+    <h2 class="form-section-title">Status &amp; Date</h2>
+    <div class="form-row form-row-2">
+      <label>Status
+        <select name="status">
+          {% for val, label in meetup.STATUS_CHOICES|default:"" %}
+            <option value="{{ val }}" {% if meetup.status == val %}selected{% endif %}>{{ label }}</option>
+          {% empty %}
+            <option value="draft" {% if not meetup or meetup.status == 'draft' %}selected{% endif %}>Draft</option>
+            <option value="published" {% if meetup.status == 'published' %}selected{% endif %}>Published</option>
+            <option value="past" {% if meetup.status == 'past' %}selected{% endif %}>Past</option>
+          {% endfor %}
+        </select>
+        <span class="hint">Only <em>published</em> meetups appear on the homepage.</span>
+      </label>
+      <label>Event Start
+        <input type="datetime-local" name="event_date"
+          value="{% if meetup.event_date %}{{ meetup.event_date|date:'Y-m-d' }}T{{ meetup.event_date|date:'H:i' }}{% endif %}">
+      </label>
+      <label>Event End <span class="hint">(optional)</span>
+        <input type="datetime-local" name="event_end"
+          value="{% if meetup.event_end %}{{ meetup.event_end|date:'Y-m-d' }}T{{ meetup.event_end|date:'H:i' }}{% endif %}">
+      </label>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="form-section-title">Venue</h2>
+    <div class="form-row form-row-2">
+      <label>Address <span class="hint">(same in all languages)</span>
+        <input type="text" name="venue_address" value="{{ meetup.venue_address|default:'' }}">
+      </label>
+      <label>Map URL
+        <input type="url" name="venue_map_url" value="{{ meetup.venue_map_url|default:'' }}">
+      </label>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="form-section-title">Registration</h2>
+    <label>Registration URL
+      <input type="url" name="registration_url" value="{{ meetup.registration_url|default:'' }}">
+    </label>
+  </div>
+
+  <div class="form-section">
+    <h2 class="form-section-title">Translations</h2>
+    <div class="lang-tabs">
+      {% for l in languages %}
+        <button type="button" class="lang-tab {% if forloop.first %}active{% endif %}"
+                onclick="switchLangTab('m-{{ l.code }}', this)">
+          {{ l.label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% for l in languages %}
+    <div class="lang-panel" id="panel-m-{{ l.code }}"
+         {% if not forloop.first %}style="display:none"{% endif %}>
+      <div class="form-row">
+        <label>Meetup Title
+          <input type="text" name="trans_{{ l.code }}_meetup_title"
+                 value="">
+          {# value injected by view via tr dict — see below #}
+          {# We use a data attribute trick for clean template #}
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Notes
+          <textarea name="trans_{{ l.code }}_notes" rows="4"></textarea>
+        </label>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Save Meetup</button>
+    <a href="{% url 'admin_index' %}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Populate translation fields from server data
+const tr = {{ tr_json|safe }};
+const langs = {{ lang_codes|safe }};
+langs.forEach(code => {
+  const vn = document.querySelector(`[name="trans_${code}_meetup_title"]`);
+  const nt = document.querySelector(`[name="trans_${code}_notes"]`);
+  if (vn && tr[code]) vn.value = tr[code].meetup_title || '';
+  if (nt && tr[code]) nt.value = tr[code].notes || '';
+});
+
+function switchLangTab(panelId, btn) {
+  document.querySelectorAll('.lang-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + panelId).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "meetups/admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block nav_meetups %}active{% endblock %}
+{% block page_title %}Meetups{% endblock %}
+{% block topbar_action %}
+  <a href="{% url 'meetup_new' %}" class="btn btn-primary">+ New Meetup</a>
+{% endblock %}
+
+{% block content %}
+{% if not meetups %}
+  <div class="empty-state-admin">No meetups yet. <a href="{% url 'meetup_new' %}">Create one</a>.</div>
+{% else %}
+<table class="admin-table">
+  <thead>
+    <tr><th>Date</th><th>Venue ({{ def_lang }})</th><th>Status</th><th>Talks</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for m in meetups %}
+    <tr>
+      <td>{% if m.event_date %}{{ m.event_date|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+      <td>{{ m.get_translation:"venue_name"|default:"—" }}</td>
+      <td><span class="badge badge-{{ m.status }}">{{ m.status }}</span></td>
+      <td>{{ m.talks.count }}</td>
+      <td class="actions">
+        <a href="{% url 'meetup_edit' m.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+        <a href="{% url 'talks_list' m.pk %}" class="btn btn-sm btn-secondary">Talks</a>
+        <a href="{% url 'meetup_delete' m.pk %}" class="btn btn-sm btn-danger"
+           onclick="return confirm('Delete this meetup and all its talks?')">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

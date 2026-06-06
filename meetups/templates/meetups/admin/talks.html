@@ -1,0 +1,124 @@
+{% extends "meetups/admin/base.html" %}
+{% block title %}Talks{% endblock %}
+{% block page_title %}Manage Talks{% endblock %}
+{% block breadcrumb %}
+  <div class="breadcrumb">
+    <a href="{% url 'admin_index' %}">Meetups</a> /
+    <a href="{% url 'meetup_edit' meetup.pk %}">{{ meetup }}</a> / Talks
+  </div>
+{% endblock %}
+{% block topbar_action %}
+  <a href="?new=1" class="btn btn-primary">+ Add Talk</a>
+{% endblock %}
+
+{% block content %}
+{% if talks %}
+<table class="admin-table">
+  <thead>
+    <tr><th>#</th><th>Title ({{ def_lang }})</th><th>Speaker</th><th>Duration</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for t in talks %}
+    <tr>
+      <td>{{ t.sort_order }}</td>
+      <td>{{ t.get_translation:"talk_title"|default:"—" }}</td>
+      <td>{{ t.speaker_name|default:"—" }}</td>
+      <td>{% if t.talk_duration_min %}{{ t.talk_duration_min }} min{% else %}—{% endif %}</td>
+      <td class="actions">
+        <a href="?edit={{ t.pk }}" class="btn btn-sm btn-secondary">Edit</a>
+        <a href="{% url 'talk_delete' t.pk %}" class="btn btn-sm btn-danger"
+           onclick="return confirm('Delete this talk?')">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if is_new or edit_talk %}
+<div class="edit-form-wrap">
+  <h2 class="form-section-title">{% if edit_talk %}Edit Talk{% else %}Add Talk{% endif %}</h2>
+  <form method="POST" class="edit-form">
+    {% csrf_token %}
+    {% if edit_talk %}
+      <input type="hidden" name="talk_id" value="{{ edit_talk.pk }}">
+    {% endif %}
+
+    <div class="form-section">
+      <h3 class="form-section-title">Speaker</h3>
+      <div class="form-row form-row-2">
+        <label>Speaker Name
+          <input type="text" name="speaker_name" value="{{ edit_talk.speaker_name|default:'' }}">
+        </label>
+        <label>Speaker Photo URL
+          <input type="url" name="speaker_photo_url" value="{{ edit_talk.speaker_photo_url|default:'' }}">
+        </label>
+      </div>
+      <div class="form-row form-row-2">
+        <label>Duration (minutes)
+          <input type="number" name="talk_duration_min" value="{{ edit_talk.talk_duration_min|default:'' }}">
+        </label>
+        <label>Sort Order
+          <input type="number" name="sort_order" value="{{ edit_talk.sort_order|default:talks.count }}">
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section-title">Translations</h3>
+      <div class="lang-tabs">
+        {% for l in languages %}
+          <button type="button" class="lang-tab {% if forloop.first %}active{% endif %}"
+                  onclick="switchLangTab('t-{{ l.code }}', this)">{{ l.label }}</button>
+        {% endfor %}
+      </div>
+      {% for l in languages %}
+      <div class="lang-panel" id="panel-t-{{ l.code }}"
+           {% if not forloop.first %}style="display:none"{% endif %}>
+        <div class="form-row">
+          <label>Talk Title
+            <input type="text" name="trans_{{ l.code }}_talk_title" value="">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Abstract
+            <textarea name="trans_{{ l.code }}_talk_abstract" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Speaker Bio
+            <textarea name="trans_{{ l.code }}_speaker_bio" rows="3"></textarea>
+          </label>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Talk</button>
+      <a href="{% url 'talks_list' meetup.pk %}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ttr = {{ ttr_json|safe }};
+const langs = {{ lang_codes|safe }};
+langs.forEach(code => {
+  ['talk_title','talk_abstract','speaker_bio'].forEach(field => {
+    const el = document.querySelector(`[name="trans_${code}_${field}"]`);
+    if (el && ttr[code]) el.value = ttr[code][field] || '';
+  });
+});
+function switchLangTab(panelId, btn) {
+  const group = btn.closest('.form-section');
+  group.querySelectorAll('.lang-panel').forEach(p => p.style.display = 'none');
+  group.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + panelId).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

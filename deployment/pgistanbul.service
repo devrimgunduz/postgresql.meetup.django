@@ -1,0 +1,24 @@
+[Unit]
+Description=Gunicorn daemon for postgresql.istanbul
+After=network.target
+
+[Service]
+Type=notify
+User=apache
+Group=apache
+WorkingDirectory=/var/www/postgresql.istanbul/django
+ExecStart=/var/www/postgresql.istanbul/venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/pgistanbul.sock \
+    --access-logfile /var/log/pgistanbul/access.log \
+    --error-logfile  /var/log/pgistanbul/error.log \
+    pgistanbul.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+EnvironmentFile=/var/www/postgresql.istanbul/django/.env
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,58 @@
+{% load meetup_tags %}<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}PostgreSQL İstanbul{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/main.css">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/?lang={{ current_lang }}" class="logo">
+      <span class="logo-elephant">🐘</span>
+      <span class="logo-text">PostgreSQL<br><strong>İstanbul</strong></span>
+    </a>
+    <nav class="site-nav">
+      <a href="/?lang={{ current_lang }}" class="nav-link {% block nav_home %}{% endblock %}">
+        {% if is_tr %}Ana Sayfa{% else %}Home{% endif %}
+      </a>
+      <a href="/previous/?lang={{ current_lang }}" class="nav-link {% block nav_prev %}{% endblock %}">
+        {% if is_tr %}Geçmiş Etkinlikler{% else %}Past Meetups{% endif %}
+      </a>
+      {% if active_languages.count > 1 %}
+      <div class="lang-switcher">
+        {% for l in active_languages %}
+          {% if l.code != current_lang %}
+            <a href="{% lang_url l.code %}" class="nav-link lang-switch">{{ l.label }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="site-main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <span>© {% now "Y" %} PostgreSQL İstanbul</span>
+    <span class="footer-sep">·</span>
+    <a href="https://www.postgresql.org" target="_blank">PostgreSQL.org</a>
+    <span class="footer-sep">·</span>
+    <a href="/previous/?lang={{ current_lang }}">
+      {% if is_tr %}Geçmiş Etkinlikler{% else %}Past Meetups{% endif %}
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>

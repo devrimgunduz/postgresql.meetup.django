@@ -1,0 +1,372 @@
+/* ============================================================
+   PostgreSQL İstanbul – Public Site CSS
+   Design: Dark editorial, navy/electric-blue, Syne + Inter
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #0d1b2a;
+  --navy-light: #162336;
+  --navy-mid:   #1e3050;
+  --blue:       #0072c3;
+  --blue-bright:#1a8fff;
+  --cyan:       #00c8d4;
+  --white:      #f0f4f8;
+  --grey:       #8fa3b8;
+  --border:     rgba(255,255,255,.08);
+  --radius:     6px;
+  --transition: 200ms ease;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Layout ---- */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* ---- Header ---- */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,27,42,.92);
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  text-decoration: none;
+  color: var(--white);
+}
+.logo-elephant { font-size: 1.6rem; line-height: 1; }
+.logo-text { font-family: 'Syne', sans-serif; font-size: .8rem; line-height: 1.25; }
+.logo-text strong { display: block; font-size: 1rem; font-weight: 800; color: var(--cyan); }
+
+.site-nav { display: flex; gap: 1.75rem; align-items: center; }
+.nav-link {
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--grey);
+  text-decoration: none;
+  letter-spacing: .03em;
+  transition: color var(--transition);
+}
+.nav-link:hover, .nav-link.active { color: var(--white); }
+.nav-link.lang-switch {
+  border: 1px solid var(--border);
+  padding: .25rem .7rem;
+  border-radius: 99px;
+  color: var(--grey);
+}
+.nav-link.lang-switch:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ---- Hero ---- */
+.site-main { flex: 1; }
+
+.hero {
+  padding: 5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 50%, rgba(0,114,195,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 80% at 80% 20%, rgba(0,200,212,.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-family: 'Syne', sans-serif;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--white);
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
+
+.meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 2.5rem;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .95rem;
+  color: var(--grey);
+}
+.meta-icon { font-size: 1rem; }
+.map-link {
+  color: var(--blue-bright);
+  text-decoration: none;
+  font-size: .8rem;
+  margin-left: .25rem;
+}
+.map-link:hover { text-decoration: underline; }
+
+.btn-register {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .9rem;
+  letter-spacing: .04em;
+  padding: .85rem 2.2rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+}
+.btn-register:hover { background: var(--blue-bright); transform: translateY(-2px); }
+
+/* ---- Talks ---- */
+.talks-section {
+  padding: 3rem 0 4rem;
+  border-top: 1px solid var(--border);
+}
+
+.section-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.section-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.talks-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.talk-card {
+  background: var(--navy-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.75rem;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1.25rem;
+  transition: border-color var(--transition);
+}
+.talk-card:hover { border-color: rgba(0,200,212,.3); }
+
+.talk-number {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--navy-mid);
+  line-height: 1;
+  padding-top: .15rem;
+}
+
+.talk-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: .5rem;
+}
+.talk-abstract {
+  font-size: .9rem;
+  color: var(--grey);
+  margin-bottom: 1.25rem;
+  line-height: 1.65;
+}
+
+.speaker-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+}
+.speaker-photo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--navy-mid);
+  flex-shrink: 0;
+}
+.speaker-name { font-size: .9rem; font-weight: 600; color: var(--white); display: block; }
+.speaker-bio { font-size: .8rem; color: var(--grey); margin-top: .2rem; }
+
+.talk-duration {
+  font-size: .78rem;
+  color: var(--grey);
+  margin-top: .75rem;
+  letter-spacing: .03em;
+}
+
+/* ---- Notes ---- */
+.notes-section { padding: 0 0 4rem; }
+.notes-box {
+  background: var(--navy-light);
+  border-left: 3px solid var(--cyan);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  font-size: .9rem;
+  color: var(--grey);
+}
+.notes-box h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: .75rem;
+}
+
+/* ---- Empty hero ---- */
+.hero--empty { text-align: center; padding: 7rem 0 6rem; }
+.elephant-large { font-size: 5rem; margin-bottom: 1.5rem; }
+.hero-empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--white);
+}
+.hero-empty-sub {
+  font-size: 1rem;
+  color: var(--grey);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+.social-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.social-btn {
+  display: inline-block;
+  border: 1px solid var(--border);
+  color: var(--grey);
+  padding: .55rem 1.25rem;
+  border-radius: 99px;
+  font-size: .85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color var(--transition), color var(--transition);
+}
+.social-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ---- Previous page ---- */
+.page-hero {
+  padding: 3.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.page-hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  margin-bottom: .5rem;
+}
+.page-hero p { color: var(--grey); }
+
+.past-section { padding: 3rem 0 5rem; }
+
+.past-list { display: grid; gap: 2rem; }
+.past-card {
+  background: var(--navy-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+}
+.past-card-header { margin-bottom: 1.5rem; }
+.past-date { font-size: .8rem; color: var(--cyan); font-weight: 600; letter-spacing: .05em; margin-bottom: .4rem; }
+.past-venue {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: .4rem;
+}
+.past-address { font-size: .85rem; color: var(--grey); }
+
+.past-talks { display: grid; gap: .75rem; }
+.past-talk {
+  display: flex;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  background: var(--navy);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.past-talk-title { font-size: .9rem; font-weight: 600; color: var(--white); flex: 1; }
+.past-talk-speaker { font-size: .8rem; color: var(--grey); flex-shrink: 0; align-self: center; }
+.past-notes { font-size: .85rem; color: var(--grey); margin-top: 1rem; }
+
+.empty-state { text-align: center; padding: 4rem; color: var(--grey); }
+
+/* ---- Footer ---- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+  font-size: .8rem;
+  color: var(--grey);
+}
+.footer-inner {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.footer-sep { color: var(--border); }
+.site-footer a { color: var(--grey); text-decoration: none; }
+.site-footer a:hover { color: var(--white); }
+
+@media (max-width: 640px) {
+  .site-nav { gap: 1rem; }
+  .talk-card { grid-template-columns: 1fr; }
+  .talk-number { font-size: 1rem; }
+  .past-talk { flex-direction: column; gap: .25rem; }
+}
+
+/* ---- Language switcher (multiple languages) ---- */
+.lang-switcher {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Admin{% endblock %} – PostgreSQL İstanbul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="admin-body">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🐘 pgistanbul</div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'admin_index' %}"     class="sn-link {% block nav_meetups %}{% endblock %}">📋 Meetups</a>
+    <a href="{% url 'meetup_new' %}"      class="sn-link {% block nav_new %}{% endblock %}">➕ New Meetup</a>
+    <a href="{% url 'languages_list' %}"  class="sn-link {% block nav_langs %}{% endblock %}">🌐 Languages</a>
+    <a href="{% url 'users_list' %}"      class="sn-link {% block nav_users %}{% endblock %}">👤 Users</a>
+    <a href="/" target="_blank"           class="sn-link">🌐 View Site</a>
+  </nav>
+  <div class="sidebar-footer">
+    Signed in as <strong>{{ request.user.username }}</strong><br>
+    <a href="{% url 'admin_logout' %}">Sign out</a>
+  </div>
+</aside>
+
+<div class="admin-main">
+  <div class="admin-topbar">
+    <div>
+      {% block breadcrumb %}{% endblock %}
+      <h1 class="admin-page-title">{% block page_title %}{% endblock %}</h1>
+    </div>
+    <div>{% block topbar_action %}{% endblock %}</div>
+  </div>
+
+  <div class="admin-content">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'success' }}">✓ {{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

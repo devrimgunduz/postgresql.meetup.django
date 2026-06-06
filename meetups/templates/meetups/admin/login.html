@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login – PostgreSQL İstanbul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="admin-login-body">
+<div class="login-wrap">
+  <div class="login-logo">🐘</div>
+  <h1 class="login-title">PostgreSQL İstanbul</h1>
+  <p class="login-sub">Admin Panel</p>
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+  <form method="POST" class="login-form">
+    {% csrf_token %}
+    <label>Username
+      <input type="text" name="username" autocomplete="username" required autofocus>
+    </label>
+    <label>Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "meetups/base.html" %}
+{% load meetup_tags %}
+{% block title %}{% if is_tr %}Geçmiş Etkinlikler{% else %}Past Meetups{% endif %} – PostgreSQL İstanbul{% endblock %}
+{% block nav_prev %}active{% endblock %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="container">
+      <h1>{% if is_tr %}Geçmiş Etkinlikler{% else %}Past Meetups{% endif %}</h1>
+      <p>{% if is_tr %}PostgreSQL İstanbul topluluk buluşmalarına bir bakış.
+         {% else %}A look back at our previous PostgreSQL İstanbul community gatherings.{% endif %}</p>
+    </div>
+  </section>
+
+  <section class="past-section">
+    <div class="container">
+      {% if not meetups %}
+        <div class="empty-state">
+          <p>{% if is_tr %}Henüz geçmiş etkinlik yok.{% else %}No past meetups yet. Check back soon!{% endif %}</p>
+        </div>
+      {% else %}
+        <div class="past-list">
+          {% for item in meetups %}
+          {% with m=item.obj tr=item.tr talks=item.talks %}
+          <article class="past-card">
+            <div class="past-card-header">
+              {% if m.event_date %}
+              <div class="past-date">{{ m.event_date|date:"F j, Y · H:i" }}{% if m.event_end %} – {{ m.event_end|date:"H:i" }}{% endif %}</div>
+              {% endif %}
+              <h2 class="past-venue">{{ tr|trans:current_lang|add:":meetup_title"|default:"—" }}</h2>
+              {% if m.venue_address %}
+              <div class="past-address">📍 {{ m.venue_address }}
+                {% if m.venue_map_url %}
+                  <a href="{{ m.venue_map_url }}" target="_blank" class="map-link">
+                    {% if is_tr %}Harita{% else %}Map{% endif %} ↗
+                  </a>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+
+            {% if talks %}
+            <div class="past-talks">
+              {% for ti in talks %}
+              <div class="past-talk">
+                <div class="past-talk-title">{{ ti.tr|trans:current_lang|add:":talk_title"|default:"—" }}</div>
+                <div class="past-talk-speaker">{{ ti.obj.speaker_name }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            {% with notes=tr|trans:current_lang|add:":notes" %}
+            {% if notes %}<div class="past-notes">{{ notes|linebreaksbr }}</div>{% endif %}
+            {% endwith %}
+          </article>
+          {% endwith %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

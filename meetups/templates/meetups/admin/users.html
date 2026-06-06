@@ -1,0 +1,56 @@
+{% extends "meetups/admin/base.html" %}
+{% block title %}Users{% endblock %}
+{% block nav_users %}active{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+<table class="admin-table">
+  <thead><tr><th>Username</th><th>Joined</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td>{{ u.date_joined|date:"Y-m-d" }}</td>
+      <td class="actions">
+        <button class="btn btn-sm btn-secondary"
+          onclick="document.getElementById('cpw-{{ u.pk }}').style.display='block'">
+          Change Password
+        </button>
+        {% if u.pk != request.user.pk %}
+          <a href="?action=delete&id={{ u.pk }}" class="btn btn-sm btn-danger"
+             onclick="return confirm('Delete user {{ u.username }}?')">Delete</a>
+        {% endif %}
+      </td>
+    </tr>
+    <tr id="cpw-{{ u.pk }}" style="display:none">
+      <td colspan="3">
+        <form method="POST" style="display:flex;gap:.5rem;align-items:center;padding:.5rem 0">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="change_password">
+          <input type="hidden" name="user_id" value="{{ u.pk }}">
+          <input type="password" name="new_password" placeholder="New password (≥8 chars)" style="flex:1">
+          <button type="submit" class="btn btn-sm btn-primary">Update</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="edit-form-wrap">
+  <h2 class="form-section-title">Add New User</h2>
+  <form method="POST" class="edit-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="add">
+    <div class="form-row form-row-2">
+      <label>Username <input type="text" name="username" required></label>
+      <label>Password <input type="password" name="password" placeholder="≥8 characters" required></label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create User</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
