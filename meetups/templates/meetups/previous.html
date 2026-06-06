@@ -39,6 +39,14 @@
               {% endif %}
             </div>
 
+            {% with notes=tr|trans:current_lang|add:":notes" %}
+            {% if notes %}
+            <div class="past-notes">
+              <strong>{% if is_tr %}Meetup hakkında{% else %}About the meetup{% endif %}</strong>
+              <p>{{ notes|linebreaksbr }}</p>
+            </div>
+            {% endif %}
+            {% endwith %}
             {% if talks %}
             <div class="past-talks">
               {% for ti in talks %}
@@ -50,9 +58,7 @@
             </div>
             {% endif %}
 
-            {% with notes=tr|trans:current_lang|add:":notes" %}
-            {% if notes %}<div class="past-notes">{{ notes|linebreaksbr }}</div>{% endif %}
-            {% endwith %}
+
           </article>
           {% endwith %}
           {% endfor %}
