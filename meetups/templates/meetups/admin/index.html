@@ -18,7 +18,7 @@
     {% for m in meetups %}
     <tr>
       <td>{% if m.event_date %}{{ m.event_date|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
-      <td>{{ m.get_translation:"venue_name"|default:"—" }}</td>
+      <td>{% with tr=m.translations_dict %}{{ tr|trans:def_lang|add:":meetup_title"|default:"—" }}{% endwith %}</td>
       <td><span class="badge badge-{{ m.status }}">{{ m.status }}</span></td>
       <td>{{ m.talks.count }}</td>
       <td class="actions">

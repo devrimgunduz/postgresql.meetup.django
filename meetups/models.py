@@ -78,8 +78,12 @@ class Meetup(models.Model):
 
     @classmethod
     def auto_archive(cls):
-        cutoff = timezone.now() - timezone.timedelta(hours=6)
-        cls.objects.filter(status='published', event_date__lt=cutoff).update(status='past')
+        from django.db import OperationalError, ProgrammingError
+        try:
+            cutoff = timezone.now() - timezone.timedelta(hours=6)
+            cls.objects.filter(status='published', event_date__lt=cutoff).update(status='past')
+        except (OperationalError, ProgrammingError):
+            pass
 
     @classmethod
     def get_next(cls):

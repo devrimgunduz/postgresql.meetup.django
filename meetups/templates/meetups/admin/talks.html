@@ -21,7 +21,7 @@
     {% for t in talks %}
     <tr>
       <td>{{ t.sort_order }}</td>
-      <td>{{ t.get_translation:"talk_title"|default:"—" }}</td>
+      <td>{% with ttr=t.translations_dict %}{{ ttr|trans:def_lang|add:":talk_title"|default:"—" }}{% endwith %}</td>
       <td>{{ t.speaker_name|default:"—" }}</td>
       <td>{% if t.talk_duration_min %}{{ t.talk_duration_min }} min{% else %}—{% endif %}</td>
       <td class="actions">
