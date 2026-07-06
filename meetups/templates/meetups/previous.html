@@ -27,7 +27,11 @@
               {% if m.event_date %}
               <div class="past-date">{{ m.event_date|date:"F j, Y · H:i" }}{% if m.event_end %} – {{ m.event_end|date:"H:i" }}{% endif %}</div>
               {% endif %}
-              <h2 class="past-venue">{{ tr|trans:current_lang|add:":meetup_title"|default:"—" }}</h2>
+              <h2 class="past-venue">
+                <a href="{% url 'meetup_detail' m.pk %}?lang={{ current_lang }}" class="past-venue-link">
+                  {{ tr|trans:current_lang|add:":meetup_title"|default:"—" }}
+                </a>
+              </h2>
               {% if m.venue_address %}
               <div class="past-address">📍 {{ m.venue_address }}
                 {% if m.venue_map_url %}
@@ -53,6 +57,11 @@
               <div class="past-talk">
                 <div class="past-talk-title">{{ ti.tr|trans:current_lang|add:":talk_title"|default:"—" }}</div>
                 <div class="past-talk-speaker">{{ ti.obj.speaker_name }}</div>
+                {% if ti.obj.slides %}
+                <a href="{{ ti.obj.slides.url }}" target="_blank" class="past-talk-slides">
+                  📄 {% if is_tr %}Slaytlar{% else %}Slides{% endif %}
+                </a>
+                {% endif %}
               </div>
               {% endfor %}
             </div>
@@ -63,6 +72,31 @@
           {% endwith %}
           {% endfor %}
         </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&lang={{ current_lang }}" class="page-link page-prev">
+              ← {% if is_tr %}Önceki{% else %}Previous{% endif %}
+            </a>
+          {% else %}
+            <span class="page-link page-prev disabled">← {% if is_tr %}Önceki{% else %}Previous{% endif %}</span>
+          {% endif %}
+
+          <span class="page-info">
+            {% if is_tr %}Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            {% else %}Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}{% endif %}
+          </span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&lang={{ current_lang }}" class="page-link page-next">
+              {% if is_tr %}Sonraki{% else %}Next{% endif %} →
+            </a>
+          {% else %}
+            <span class="page-link page-next disabled">{% if is_tr %}Sonraki{% else %}Next{% endif %} →</span>
+          {% endif %}
+        </nav>
+        {% endif %}
       {% endif %}
     </div>
   </section>

@@ -318,3 +318,51 @@ body {
 
 .muted { color: var(--grey); font-size: .8rem; }
 code { background: var(--bg); padding: .1rem .4rem; border-radius: 3px; font-size: .82rem; }
+
+/* ---- Photo upload preview ---- */
+.photo-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.photo-preview img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface2);
+}
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: .4rem;
+  font-size: .8rem;
+  color: var(--grey);
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+/* ---- File (slides) preview ---- */
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.file-preview a {
+  color: var(--blue-b);
+  text-decoration: none;
+  font-size: .85rem;
+  font-weight: 500;
+}
+.file-preview a:hover { text-decoration: underline; }

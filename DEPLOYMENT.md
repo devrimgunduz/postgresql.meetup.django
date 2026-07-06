@@ -172,3 +172,55 @@ crontab -u apache -e
   /var/www/postgresql.istanbul/django/manage.py shell -c \
   "from meetups.models import Meetup; Meetup.auto_archive()"
 ```
+
+---
+
+## Speaker photo uploads
+
+Speaker photos are uploaded as files (JPG/PNG, max 5 MB) and stored under `MEDIA_ROOT`
+(`django/media/speakers/` by default), served at `/media/speakers/...`.
+
+After pulling this update, run migrations to add the new `speaker_photo` field:
+
+```bash
+source /var/www/postgresql.istanbul/venv/bin/activate
+cd /var/www/postgresql.istanbul/django
+python manage.py makemigrations meetups
+python manage.py migrate
+```
+
+Create the media directory and ensure it's writable:
+
+```bash
+mkdir -p /var/www/postgresql.istanbul/django/media/speakers
+chown -R apache:apache /var/www/postgresql.istanbul/django/media
+```
+
+The updated `deployment/apache.conf` adds an `/media` alias so Apache serves uploaded
+photos directly (faster than proxying through Gunicorn). Re-copy it if you're updating
+an existing deployment:
+
+```bash
+cp deployment/apache.conf /etc/httpd/conf.d/postgresql.istanbul.conf
+apachectl configtest && systemctl reload httpd
+```
+
+When a speaker photo is replaced or removed via the admin panel, the old file is
+automatically deleted from disk.
+
+---
+
+## Slide deck uploads
+
+Speakers' slides (PDF only, max 25 MB) are uploaded via the admin panel and stored
+under `MEDIA_ROOT/slides/`, served at `/media/slides/...`. A "Download Slides" link
+appears on the public meetup page — for both the upcoming meetup and past meetups.
+
+After pulling this update, run migrations to add the new `slides` field:
+
+```bash
+source /var/www/postgresql.istanbul/venv/bin/activate
+cd /var/www/postgresql.istanbul/django
+python manage.py makemigrations meetups
+python manage.py migrate
+```

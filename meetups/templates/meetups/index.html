@@ -4,97 +4,9 @@
 
 {% block content %}
 {% if meetup %}
-
-  <section class="hero">
-    <div class="container">
-      <div class="hero-label">
-        {% if is_tr %}Sonraki Etkinlik{% else %}Next Meetup{% endif %}
-      </div>
-      <h1 class="hero-title">{{ tr|trans:current_lang|add:":meetup_title"|default:"Coming Soon" }}</h1>
-
-      <div class="meta-row">
-        {% if meetup.event_date %}
-        <div class="meta-item">
-          <span class="meta-icon">📅</span>
-          <span>{{ meetup.event_date|date:"F j, Y · H:i" }}{% if meetup.event_end %} – {{ meetup.event_end|date:"H:i" }}{% endif %}</span>
-        </div>
-        {% endif %}
-        {% if meetup.venue_address %}
-        <div class="meta-item">
-          <span class="meta-icon">📍</span>
-          <span>{{ meetup.venue_address }}</span>
-          {% if meetup.venue_map_url %}
-            <a href="{{ meetup.venue_map_url }}" target="_blank" class="map-link">
-              {% if is_tr %}Harita{% else %}Map{% endif %} ↗
-            </a>
-          {% endif %}
-        </div>
-        {% endif %}
-      </div>
-
-      {% if meetup.registration_url %}
-      <div class="hero-cta">
-        <a href="{{ meetup.registration_url }}" target="_blank" class="btn-register">
-          {% if is_tr %}Kayıt Ol{% else %}Register Now{% endif %}
-        </a>
-      </div>
-      {% endif %}
-    </div>
-  </section>
-
-  {% with notes=tr|trans:current_lang|add:":notes" %}
-  {% if notes %}
-  <section class="notes-section">
-    <div class="container">
-      <div class="notes-box">
-        <h3>{% if is_tr %}Meetup hakkında{% else %}About the meetup{% endif %}</h3>
-        <p>{{ notes|linebreaksbr }}</p>
-      </div>
-    </div>
-  </section>
-  {% endif %}
+  {% with hero_label=is_tr|yesno:"Sonraki Etkinlik,Next Meetup" %}
+  {% include "meetups/_meetup_detail.html" %}
   {% endwith %}
-  {% if talks %}
-  <section class="talks-section">
-    <div class="container">
-      <h2 class="section-heading">{% if is_tr %}Sunumlar{% else %}Talks{% endif %}</h2>
-      <div class="talks-grid">
-        {% for item in talks %}
-        {% with t=item.obj ttr=item.tr %}
-        <article class="talk-card">
-          <div class="talk-number">{{ forloop.counter|stringformat:"02d" }}</div>
-          <div class="talk-body">
-            <h3 class="talk-title">{{ ttr|trans:current_lang|add:":talk_title" }}</h3>
-            {% with abstract=ttr|trans:current_lang|add:":talk_abstract" %}
-            {% if abstract %}<p class="talk-abstract">{{ abstract }}</p>{% endif %}
-            {% endwith %}
-            <div class="speaker-row">
-              {% if t.speaker_photo_url %}
-              <img src="{{ t.speaker_photo_url }}" alt="{{ t.speaker_name }}" class="speaker-photo">
-              {% endif %}
-              <div class="speaker-info">
-                <strong class="speaker-name">{{ t.speaker_name }}</strong>
-                {% with bio=ttr|trans:current_lang|add:":speaker_bio" %}
-                {% if bio %}<p class="speaker-bio">{{ bio }}</p>{% endif %}
-                {% endwith %}
-              </div>
-            </div>
-            {% if t.talk_duration_min %}
-            <div class="talk-duration">
-              ⏱ {{ t.talk_duration_min }} {% if is_tr %}dak{% else %}min{% endif %}
-            </div>
-            {% endif %}
-          </div>
-        </article>
-        {% endwith %}
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-  {% endif %}
-
-
-
 {% else %}
 
   <section class="hero hero--empty">

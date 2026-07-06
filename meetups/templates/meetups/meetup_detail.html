@@ -1,0 +1,44 @@
+{% extends "meetups/base.html" %}
+{% load meetup_tags %}
+{% block title %}
+  {% if meetup %}{{ tr|trans:current_lang|add:":meetup_title" }} – PostgreSQL İstanbul
+  {% else %}PostgreSQL İstanbul{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if meetup %}
+  {% include "meetups/_meetup_detail.html" %}
+
+  <section class="notes-section">
+    <div class="container">
+      <a href="{% url 'previous' %}?lang={{ current_lang }}" class="back-link">
+        ← {% if is_tr %}Tüm geçmiş etkinlikler{% else %}All past meetups{% endif %}
+      </a>
+    </div>
+  </section>
+
+{% else %}
+
+  <section class="hero hero--empty">
+    <div class="container">
+      <div class="elephant-large">🐘</div>
+      <h1 class="hero-empty-title">
+        {% if is_tr %}Etkinlik bulunamadı{% else %}Meetup not found{% endif %}
+      </h1>
+      <p class="hero-empty-sub">
+        {% if is_tr %}Aradığınız etkinlik mevcut değil ya da kaldırılmış olabilir.
+        {% else %}This meetup doesn't exist or may have been removed.{% endif %}
+      </p>
+      <div class="social-links">
+        <a href="{% url 'previous' %}?lang={{ current_lang }}" class="social-btn">
+          {% if is_tr %}Geçmiş Etkinlikler{% else %}Past Meetups{% endif %}
+        </a>
+        <a href="{% url 'index' %}?lang={{ current_lang }}" class="social-btn">
+          {% if is_tr %}Ana Sayfa{% else %}Home{% endif %}
+        </a>
+      </div>
+    </div>
+  </section>
+
+{% endif %}
+{% endblock %}

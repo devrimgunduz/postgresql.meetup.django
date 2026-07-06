@@ -4,8 +4,27 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.db import transaction
+from django.conf import settings
 
 from .models import Language, Meetup, MeetupTranslation, Talk, TalkTranslation
+
+
+def _validate_photo_upload(uploaded_file) -> None:
+    """Raise ValueError if the uploaded file fails size/type checks."""
+    if uploaded_file.size > settings.MAX_UPLOAD_SIZE_BYTES:
+        raise ValueError('Photo must be smaller than 5 MB.')
+    content_type = getattr(uploaded_file, 'content_type', '')
+    if content_type not in settings.ALLOWED_UPLOAD_MIMES:
+        raise ValueError('Only JPG and PNG images are allowed.')
+
+
+def _validate_slides_upload(uploaded_file) -> None:
+    """Raise ValueError if the uploaded slides file fails size/type checks."""
+    if uploaded_file.size > settings.MAX_SLIDES_SIZE_BYTES:
+        raise ValueError('Slides file must be smaller than 25 MB.')
+    content_type = getattr(uploaded_file, 'content_type', '')
+    if content_type != settings.ALLOWED_SLIDES_MIME:
+        raise ValueError('Only PDF files are allowed for slides.')
 
 
 # ── Auth ─────────────────────────────────────────────────────
@@ -116,34 +135,62 @@ def talks_list(request, meetup_pk):
 
     if request.method == 'POST':
         talk_pk = request.POST.get('talk_id')
-        with transaction.atomic():
-            if talk_pk:
-                talk = get_object_or_404(Talk, pk=talk_pk, meetup=meetup)
-            else:
-                talk = Talk(meetup=meetup)
-            talk.sort_order        = int(request.POST.get('sort_order', 0))
-            talk.speaker_name      = request.POST.get('speaker_name', '')
-            talk.speaker_photo_url = request.POST.get('speaker_photo_url', '')
-            dur = request.POST.get('talk_duration_min', '')
-            talk.talk_duration_min = int(dur) if dur.strip() else None
-            talk.save()
+        try:
+            with transaction.atomic():
+                if talk_pk:
+                    talk = get_object_or_404(Talk, pk=talk_pk, meetup=meetup)
+                else:
+                    talk = Talk(meetup=meetup)
+                talk.sort_order   = int(request.POST.get('sort_order', 0))
+                talk.speaker_name = request.POST.get('speaker_name', '')
+                dur = request.POST.get('talk_duration_min', '')
+                talk.talk_duration_min = int(dur) if dur.strip() else None
 
-            for lang in languages:
-                for field in ('talk_title', 'talk_abstract', 'speaker_bio'):
-                    key   = f'trans_{lang.code}_{field}'
-                    value = request.POST.get(key, '').strip()
-                    if value:
-                        TalkTranslation.objects.update_or_create(
-                            talk=talk, lang=lang.code, field=field,
-                            defaults={'value': value},
-                        )
-                    else:
-                        TalkTranslation.objects.filter(
-                            talk=talk, lang=lang.code, field=field
-                        ).delete()
+                uploaded = request.FILES.get('speaker_photo')
+                if uploaded:
+                    _validate_photo_upload(uploaded)
+                    if talk.speaker_photo:
+                        talk.speaker_photo.delete(save=False)
+                    talk.speaker_photo = uploaded
+                elif request.POST.get('remove_photo'):
+                    if talk.speaker_photo:
+                        talk.speaker_photo.delete(save=False)
+                    talk.speaker_photo = None
 
-        messages.success(request, 'Talk saved.')
-        return redirect('talks_list', meetup_pk=meetup_pk)
+                uploaded_slides = request.FILES.get('slides')
+                if uploaded_slides:
+                    _validate_slides_upload(uploaded_slides)
+                    if talk.slides:
+                        talk.slides.delete(save=False)
+                    talk.slides = uploaded_slides
+                elif request.POST.get('remove_slides'):
+                    if talk.slides:
+                        talk.slides.delete(save=False)
+                    talk.slides = None
+
+                talk.save()
+
+                for lang in languages:
+                    for field in ('talk_title', 'talk_abstract', 'speaker_bio'):
+                        key   = f'trans_{lang.code}_{field}'
+                        value = request.POST.get(key, '').strip()
+                        if value:
+                            TalkTranslation.objects.update_or_create(
+                                talk=talk, lang=lang.code, field=field,
+                                defaults={'value': value},
+                            )
+                        else:
+                            TalkTranslation.objects.filter(
+                                talk=talk, lang=lang.code, field=field
+                            ).delete()
+
+            messages.success(request, 'Talk saved.')
+            return redirect('talks_list', meetup_pk=meetup_pk)
+        except ValueError as e:
+            messages.error(request, str(e))
+            edit_talk = get_object_or_404(Talk, pk=talk_pk, meetup=meetup) if talk_pk else None
+            ttr       = edit_talk.translations_dict() if edit_talk else {}
+            is_new    = not talk_pk
 
     import json
     return render(request, 'meetups/admin/talks.html', {

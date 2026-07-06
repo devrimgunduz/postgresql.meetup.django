@@ -95,6 +95,13 @@ class Meetup(models.Model):
         cls.auto_archive()
         return cls.objects.filter(status='past').order_by('-event_date')
 
+    @classmethod
+    def get_public(cls, pk):
+        """Fetch a single meetup for public display — only if published or past.
+        Returns None for drafts, so drafts can never leak via a direct link."""
+        cls.auto_archive()
+        return cls.objects.filter(pk=pk, status__in=['published', 'past']).first()
+
 
 class MeetupTranslation(models.Model):
     FIELD_CHOICES = [
@@ -117,8 +124,9 @@ class Talk(models.Model):
     meetup            = models.ForeignKey(Meetup, on_delete=models.CASCADE, related_name='talks')
     sort_order        = models.IntegerField(default=0)
     speaker_name      = models.CharField(max_length=255, blank=True)
-    speaker_photo_url = models.URLField(blank=True)
+    speaker_photo    = models.ImageField(upload_to='speakers/', blank=True, null=True)
     talk_duration_min = models.IntegerField(null=True, blank=True)
+    slides           = models.FileField(upload_to='slides/', blank=True, null=True)
 
     class Meta:
         ordering = ['sort_order']

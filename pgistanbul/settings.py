@@ -75,6 +75,17 @@ USE_TZ    = True
 STATIC_URL       = '/static/'
 STATIC_ROOT      = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Speaker photo upload constraints
+MAX_UPLOAD_SIZE_BYTES  = 5 * 1024 * 1024  # 5 MB
+ALLOWED_UPLOAD_MIMES   = {'image/jpeg': 'jpg', 'image/png': 'png'}
+
+# Slides upload constraints
+MAX_SLIDES_SIZE_BYTES  = 25 * 1024 * 1024  # 25 MB
+ALLOWED_SLIDES_MIME    = 'application/pdf'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -38,7 +38,7 @@
 {% if is_new or edit_talk %}
 <div class="edit-form-wrap">
   <h2 class="form-section-title">{% if edit_talk %}Edit Talk{% else %}Add Talk{% endif %}</h2>
-  <form method="POST" class="edit-form">
+  <form method="POST" class="edit-form" enctype="multipart/form-data">
     {% csrf_token %}
     {% if edit_talk %}
       <input type="hidden" name="talk_id" value="{{ edit_talk.pk }}">
@@ -50,10 +50,20 @@
         <label>Speaker Name
           <input type="text" name="speaker_name" value="{{ edit_talk.speaker_name|default:'' }}">
         </label>
-        <label>Speaker Photo URL
-          <input type="url" name="speaker_photo_url" value="{{ edit_talk.speaker_photo_url|default:'' }}">
+        <label>Speaker Photo <span class="hint">(JPG or PNG, max 5 MB)</span>
+          <input type="file" name="speaker_photo" accept="image/jpeg,image/png">
         </label>
       </div>
+      {% if edit_talk.speaker_photo %}
+      <div class="form-row">
+        <div class="photo-preview">
+          <img src="{{ edit_talk.speaker_photo.url }}" alt="Current photo">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remove_photo" value="1"> Remove this photo
+          </label>
+        </div>
+      </div>
+      {% endif %}
       <div class="form-row form-row-2">
         <label>Duration (minutes)
           <input type="number" name="talk_duration_min" value="{{ edit_talk.talk_duration_min|default:'' }}">
@@ -62,6 +72,21 @@
           <input type="number" name="sort_order" value="{{ edit_talk.sort_order|default:talks.count }}">
         </label>
       </div>
+      <div class="form-row">
+        <label>Slides <span class="hint">(PDF only, max 25 MB)</span>
+          <input type="file" name="slides" accept="application/pdf">
+        </label>
+      </div>
+      {% if edit_talk.slides %}
+      <div class="form-row">
+        <div class="file-preview">
+          <a href="{{ edit_talk.slides.url }}" target="_blank">📄 Current slides</a>
+          <label class="checkbox-label">
+            <input type="checkbox" name="remove_slides" value="1"> Remove slides
+          </label>
+        </div>
+      </div>
+      {% endif %}
     </div>
 
     <div class="form-section">

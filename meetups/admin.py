@@ -17,7 +17,7 @@ class TalkTranslationInline(admin.TabularInline):
 class TalkInline(admin.StackedInline):
     model  = Talk
     extra  = 0
-    fields = ('sort_order', 'speaker_name', 'speaker_photo_url', 'talk_duration_min')
+    fields = ('sort_order', 'speaker_name', 'speaker_photo', 'talk_duration_min')
     show_change_link = True
 
 
